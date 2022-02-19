@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kuang.dao.BlogMapper">
+
+    <insert id="addBlog" parameterType="blog">
+    <!--John注：在IDEA的setting中的语言与架构中设置数据库方言可以自动补齐-->
+        insert into kuang.blog (id, title, author, create_time, views)
+        values (#{id}, #{title}, #{author}, #{createTime}, #{views});
+    </insert>
+
+
+    <!--动态SQL的练习，动态SQL本质上还是SQL语句，只是我们可以在SQL层面，去执行一个逻辑代码-->
+    <select id="queryBlogIF" resultType="blog" parameterType="map">
+<!--        下面用了where 1=1虽然也能查出来，但是不太符合规范-->
+<!--        select * from kuang.blog where 1 = 1-->
+<!--        <if test="title != null">and title = #{title}</if>-->
+<!--        <if test="author != null">and author = #{author}</if>-->
+<!--        改为以下会更好，where 元素只会在子元素返回任何内容的情况下才插入 “WHERE” 子句。
+            而且，若子句的开头为 “AND” 或 “OR”，where 元素也会将它们去除。-->
+        select * from kuang.blog
+        <where>
+            <if test="title != null">and title = #{title}</if>
+            <if test="author != null">and author = #{author}</if>
+        </where>
+    </select>
+
+
+    <select id="queryBlogChoose" parameterType="map" resultType="blog">
+        select * from kuang.blog
+        <where>
+            <choose>
+                <when test="title != null">title = #{title}</when>
+                <when test="author !=null">and author = #{name}</when>
+                <otherwise>and views = #{views}</otherwise>
+            </choose>
+        </where>
+    </select>
+
+
+    <update id="updateBlog" parameterType="map">
+        update kuang.blog
+        <!--set 元素会动态地在行首插入 SET 关键字，并会删掉额外的逗号-->
+        <set>
+            <if test="title != null">
+                title = #{title},         <!--此处记得加逗号-->
+            </if>
+            <if test="author != null">
+                author = #{author}
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+
+    <!--练习sql片段：
+    为什么要使用：有很多sql语句的重复，可以单独提取出来并封装成代码块，在出现这些高频的代码块时，可以直接调用
+
+    总结SQL片段用法：
+    1.抽取公共部分，使用标签<sql id="">>
+    2.使用所提取的SQL片段，使用标签<include id=""/>
+
+    注意点：
+    1.最好基于单表来定义SQL片段
+    2.不要存在where标签
+    -->
+    <sql id="if-title-author">
+        <if test="title != null">
+            title = #{title}
+        </if>
+        <if test="author != null">
+            and author = #{author}
+        </if>
+    <!--这样，一个sql片段就封装出来了-->
+    </sql>
+    <select id="queryBySQL" parameterType="map" resultType="blog">
+        select * from kuang.blog
+        <where>
+            <!--实际使用SQL片段时，把它include进来-->
+            <include refid="if-title-author"/>
+        </where>
+    </select>
+
+
+    <!--
+    foreach的使用：
+    我们要拼接的SQL语句完整如下
+    select * from kuang.blog where 1=1 and (id=1 or id=2 or id=3)
+    -->
+    <select id="queryBlogForeach" parameterType="map" resultType="blog">
+            select * from kuang.blog
+            <where>
+                <!--这里的collection表示要遍历的对象，item是每个遍历出的对象的字段
+                open是拼接出来的SQL语句的开头，close则是结尾，separator是中间字段以什么隔开-->
+                <foreach collection="ids" item="id" open="and (" close=")" separator="or">
+                    id = #{id}
+                </foreach>
+            </where>
+    </select>
+
+</mapper>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<!--名字空间绑定了对应的接口，接下来只要专注于sql语句-->
+
+<mapper namespace="com.kuang.dao.UserMapper">
+    <!-- 其中，sql语句中为“数据库.表名”，是因为IDEA连了数据库，所以这么写，若Idea
+    没有连接数据库，则可以不用写数据库名，直接写表名-->
+    <select id="getUserList" resultType="com.kuang.pojo.User" >
+        select * from kuang.user
+    </select>
+
+    <!-- Map传递参数，直接在sql中取出key即可
+    对象传递参数，直接在sql中取对象的属性即可
+    只有一个基本类型参数的情况下，直接在sql中取到
+    多个参数用Map，或者注解
+    -->
+    <select id="getUserById"  resultType="com.kuang.pojo.User" parameterType="int">
+        select * from kuang.user where id=#{id};
+    </select>
+
+    <select id="getUserLike" resultType="com.kuang.pojo.User">
+        select * from kuang.user where name like #{value}
+    </select>
+
+    <insert id="addUser" parameterType="com.kuang.pojo.User">
+        insert into kuang.user (id,name,pwd) value (#{id},#{name},#{pwd});
+    </insert>
+
+    <!--使用map-->
+    <insert id="addUser2" parameterType="map">
+        insert into kuang.user(id, name, pwd) values (#{userid}, #{userName}, #{password});
+    </insert>
+
+    <update id="updateUser" parameterType="com.kuang.pojo.User">
+        update kuang.user set name=#{name},pwd=#{pwd} where id = #{id};
+    </update>
+
+    <delete id="deleteUser" parameterType="int">
+        delete from kuang.user where id = #{id};
+    </delete>
+
+
+
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

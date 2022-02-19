@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<!--名字空间绑定了对应的接口，接下来只要专注于sql语句-->
+
+<mapper namespace="com.kuang.dao.UserMapper">
+
+
+    <!--结果集映射，resultMap的展示,column表示数据库中的名称，
+    property表示Java中POJO的名称-->
+    <resultMap id="UserMapper" type="User">
+        <result column="id" property="userId"/>
+        <result column="name" property="userName"/>
+        <result column="pwd" property="password"/>
+    </resultMap>
+
+    <!--结果集映射，resultMap的展示-->
+    <select id="getUserList" resultMap="UserMapper" >
+        select * from kuang.user
+    </select>
+
+    <!--分页-->
+    <select id="getUserByLimit" parameterType="map" resultMap="UserMapper">
+        select * from kuang.user limit #{startIndex},#{pageSize}
+    </select>
+
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

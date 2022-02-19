@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kuang.dao.UserMapper">
+
+<!--    开启二级缓存的方法-->
+<!--    <cache/>-->
+<!--    如上，这样就已经开启了二级缓存，就是如此简单，可以如下的详细配置-->
+<!--    <cache eviction="FIFO" flushInterval="60000" size="512" readOnly="true"/>-->
+<!--    这个更高级的配置创建了一个FIFO缓存，每隔60秒刷新，最多可以存储结果或列表的512个引用，-->
+<!--    而且返回的对象被认为是只读的，因此对它们进行修改可能会在不同线程中的调用者产生冲突-->
+<!--    或者，自定义缓存，手动导ehcache，要去maven仓库导入依赖，如下-->
+    <cache type="org.mybatis.caches.ehcache.EhcacheCache"/>
+
+    <select id="queryUserById" parameterType="_int" resultType="User">
+        select * from kuang.user where id = #{id}
+    </select>
+
+    <update id="updateUser" parameterType="User">
+        update kuang.user set name = #{name}, pwd = #{pwd} where id = #{id};
+    </update>
+</mapper>
